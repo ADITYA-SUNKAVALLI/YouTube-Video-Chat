@@ -99,7 +99,7 @@ Display Answer in Streamlit
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/youtube-video-chat.git
+git clone https://github.com/ADITYA-SUNKAVALLI/youtube-video-chat.git
 cd youtube-video-chat
 
 # Create and activate a virtual environment
@@ -116,7 +116,6 @@ Create a `.env` file in the project root with your API credentials:
 
 ```env
 NVIDIA_API_KEY=your_nvidia_api_key
-LLM_API_KEY=your_llm_api_key
 ```
 
 ### Run the App
@@ -160,6 +159,3 @@ The goal of this project is to build an intelligent YouTube assistant that can u
 
 Contributions are welcome. Please open an issue to discuss proposed changes before submitting a pull request.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
