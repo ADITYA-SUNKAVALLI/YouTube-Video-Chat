@@ -1,9 +1,12 @@
-from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api._errors import (
-    TranscriptsDisabled,
-    NoTranscriptFound
-)
+import os
+import requests
 from urllib.parse import urlparse, parse_qs
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SUPADATA_API_KEY = os.getenv("SUPADATA_API_KEY")
+SUPADATA_URL = "https://api.supadata.ai/v1/youtube/transcript"
 
 
 def extract_video_id(url):
@@ -22,7 +25,6 @@ def extract_video_id(url):
     return None
 
 
-
 def get_transcript_from_video(url):
 
     video_id = extract_video_id(url)
@@ -33,64 +35,61 @@ def get_transcript_from_video(url):
             "message": "Invalid YouTube URL"
         }
 
-
     try:
-        # Create API object
-        ytt_api = YouTubeTranscriptApi()
-
-
-        # Get available transcripts
-        transcript_list = ytt_api.list(video_id)
-
-
-        # Try English first
-        try:
-            transcript = transcript_list.find_transcript(["en"])
-
-        except NoTranscriptFound:
-            # Take first available language
-            transcript = next(iter(transcript_list))
-
-
-        # Fetch transcript
-        transcript_data = transcript.fetch()
-
-
-        # Convert to text
-        text = " ".join(
-            snippet.text for snippet in transcript_data
+        resp = requests.get(
+            SUPADATA_URL,
+            params={"videoId": video_id},
+            headers={"x-api-key": SUPADATA_API_KEY},
+            timeout=20,
         )
 
+        # No captions / no transcript available for this video
+        if resp.status_code == 404:
+            return {
+                "status": "failed",
+                "message": "No transcript found."
+            }
+
+        resp.raise_for_status()
+        data = resp.json()
+
+        # Combine all segments into a single text block
+        segments = data.get("content", [])
+        text = " ".join(seg["text"] for seg in segments)
+
+        if not text.strip():
+            return {
+                "status": "failed",
+                "message": "No transcript available. Captions disabled."
+            }
+
+        language_code = data.get("lang", "en")
 
         return {
             "status": "success",
             "video_id": video_id,
-            "language": transcript.language,
-            "language_code": transcript.language_code,
+            "language": language_code,       # Supadata doesn't return a full language name, only the code
+            "language_code": language_code,
             "transcript": text
         }
 
-
-    except TranscriptsDisabled:
+    except requests.exceptions.HTTPError as e:
         return {
-            "status": "failed",
-            "message": "No transcript available. Captions disabled."
+            "status": "error",
+            "message": f"Supadata API error: {str(e)}"
         }
 
-
-    except NoTranscriptFound:
+    except requests.exceptions.RequestException as e:
         return {
-            "status": "failed",
-            "message": "No transcript found."
+            "status": "error",
+            "message": f"Request failed: {str(e)}"
         }
-
 
     except Exception as e:
         return {
             "status": "error",
             "message": str(e)
         }
-
 
 
 # Test
