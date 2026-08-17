@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_nvidia_ai_endpoints import ChatNVIDIA
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 load_dotenv()
 
@@ -10,9 +10,9 @@ load_dotenv()
 # NVIDIA LLM
 # ---------------------------------------------------------
 
-llm = ChatNVIDIA(
-    model="meta/llama-3.3-70b-instruct",
-    api_key=os.getenv("NVIDIA_API_KEY"),
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    google_api_key=os.getenv("GOOGLE_API_KEY"),
     temperature=0
 )
 
@@ -102,15 +102,15 @@ if __name__ == "__main__":
     sample_question = "Why does he like Shanghai?"
 
     sample_context = """
-[00:18]
+                        [00:18]
 
-He says Shanghai is his favorite city because he grew up there and
-his friends are also there.
+                        He says Shanghai is his favorite city because he grew up there and
+                        his friends are also there.
 
-[00:42]
+                        [00:42]
 
-He also mentions that he lived in the United States for seven years.
-"""
+                        He also mentions that he lived in the United States for seven years.
+                    """
 
     result = generate_answer(
         sample_question,
