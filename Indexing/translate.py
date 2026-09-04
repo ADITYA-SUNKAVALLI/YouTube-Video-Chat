@@ -14,6 +14,7 @@ translation_model = ChatNVIDIA(
 )
 
 
+
 def load_translation_model():
     """
     Returns the initialized translation model.

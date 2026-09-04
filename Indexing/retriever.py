@@ -1,9 +1,7 @@
 import os
 from dotenv import load_dotenv
-
 from langchain_chroma import Chroma
 from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
-
 load_dotenv()
 
 # --------------------------------------------------------
@@ -12,7 +10,7 @@ load_dotenv()
 # --------------------------------------------------------
 
 embeddings = NVIDIAEmbeddings(
-    model="nvidia/llama-nemotron-embed-1b-v2",
+    model="nvidia/nemotron-3-embed-1b",
     api_key=os.getenv("NVIDIA_API_KEY")
 )
 
@@ -52,7 +50,6 @@ def retrieve_documents(query: str):
 # --------------------------------------------------------
 # Re-ranking
 # (Currently simple ranking based on similarity order)
-# Replace with NVIDIA Re-ranker later if needed.
 # --------------------------------------------------------
 
 def rerank_documents(documents, top_n=4):
@@ -93,6 +90,5 @@ if __name__ == "__main__":
 
     result = retrieve_context(query)
 
-    print("\n========== RETRIEVED CONTEXT ==========\n")
-
-    print(result["context"])
+    # print("\n========== RETRIEVED CONTEXT ==========\n")
+    # print(result["context"])

@@ -1,20 +1,15 @@
 import os
 from dotenv import load_dotenv
-
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openrouter import ChatOpenRouter
 
 load_dotenv()
 
-# ---------------------------------------------------------
-# NVIDIA LLM
-# ---------------------------------------------------------
+# -------------------------------------------
+# OpenROuter LLM
+# -------------------------------------------
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    google_api_key=os.getenv("GOOGLE_API_KEY"),
-    temperature=0
-)
+llm = ChatOpenRouter(model="openrouter/free")
 
 # ---------------------------------------------------------
 # Prompt Template
@@ -75,16 +70,15 @@ def generate_answer(
     """
     Generates the final answer using the retrieved transcript.
     """
-
     chain = prompt | llm
 
     response = chain.invoke(
-    {
-        "question": question,
-        "context": context,
-        "history": history
-    }
-)
+        {
+            "question": question,
+            "context": context,
+            "history": history
+        }
+    )
 
     return {
         "status": "success",
@@ -101,21 +95,12 @@ if __name__ == "__main__":
 
     sample_question = "Why does he like Shanghai?"
 
-    sample_context = """
-                        [00:18]
-
-                        He says Shanghai is his favorite city because he grew up there and
-                        his friends are also there.
-
-                        [00:42]
-
-                        He also mentions that he lived in the United States for seven years.
-                    """
+    sample_context = """[00:18]He says Shanghai is his favorite city because he grew up there and"""
 
     result = generate_answer(
         sample_question,
         sample_context
     )
 
-    print("\n========== ANSWER ==========\n")
-    print(result["answer"])
+    # print("\n========== ANSWER ==========\n")
+    # print(result["answer"])

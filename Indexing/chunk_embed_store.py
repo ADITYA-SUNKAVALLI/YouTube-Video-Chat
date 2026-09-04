@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
@@ -11,7 +10,6 @@ load_dotenv()
 # ---------------------------------------------------------
 # NVIDIA Embedding Model
 # ---------------------------------------------------------
-
 embeddings = NVIDIAEmbeddings(
     model="nvidia/nemotron-3-embed-1b",
     api_key=os.getenv("NVIDIA_API_KEY")
@@ -32,7 +30,6 @@ text_splitter = RecursiveCharacterTextSplitter(
 
 VECTOR_DB_PATH = "chroma_db"
 
-
 def create_vector_store(translation_result: dict):
     """
     Receives translated transcript and creates a fresh vector database.
@@ -42,11 +39,6 @@ def create_vector_store(translation_result: dict):
         return translation_result
 
     text = translation_result["text"]
-    print("\n==============================")
-    print("TEXT RECEIVED FROM TRANSLATOR")
-    print("==============================")
-    print(text[:1000])
-    print("==============================\n")
 
     # -------------------------------------------------
     # Step 1 : Chunking
@@ -61,16 +53,6 @@ def create_vector_store(translation_result: dict):
         )
         for i, chunk in enumerate(chunks)
     ]
-    print("\n==============================")
-    print("FIRST CHUNK")
-    print("==============================")
-    print(documents[0].page_content[:1000])
-    print("==============================\n")
-
-    print(f"Created {len(documents)} chunks.")
-    print("\n========== FIRST CHUNK ==========\n")
-    print(documents[0].page_content[:1500])
-    print("\n=================================\n")
 
     # -------------------------------------------------
     # Step 2 : Open/Create Chroma
@@ -121,17 +103,7 @@ if __name__ == "__main__":
     sample = {
         "status": "success",
         "translated": False,
-        "text": """
-Artificial Intelligence (AI) is transforming the world.
-
-Machine Learning is a subset of AI.
-
-Deep Learning is a subset of Machine Learning.
-
-Large Language Models are trained on huge amounts of text.
-""" * 50
+        "text": """Artificial Intelligence (AI) is transforming the world.""" * 50
     }
-
     result = create_vector_store(sample)
-
-    print(result)
+    # print(result)
